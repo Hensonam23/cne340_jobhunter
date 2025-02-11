@@ -10,8 +10,9 @@ import html2text
 # You may need to edit the connect function based on your local settings.#I made a password for my database because it is important to do so. Also make sure MySQL server is running or it will not connect
 def connect_to_sql():
     conn = mysql.connector.connect(user='root', password='',
-                                   host='127.0.0.1', database='cne340')
-    return conn
+                                   host='127.0.0.1',
+                                    database='cne340')
+    cursor = conn.cursor()
 
 
 # Create the table structure
@@ -44,7 +45,7 @@ def add_new_job(cursor, jobdetails):
 # Check if new job
 def check_if_job_exists(cursor, jobdetails):
     ##Add your code here
-    query = "UPDATE"
+    query = "SELECT"
     return query_sql(cursor, query)
 
 # Deletes job
