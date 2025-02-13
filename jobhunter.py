@@ -21,8 +21,8 @@ def create_tables(cursor):
     # Must set Title to CHARSET utf8 unicode Source: http://mysql.rjweb.org/doc.php/charcoll.
     # Python is in latin-1 and error (Incorrect string value: '\xE2\x80\xAFAbi...') will occur if Description is not in unicode format due to the json data
     cursor.execute('''CREATE TABLE IF NOT EXISTS jobs (id INT PRIMARY KEY auto_increment, Job_id varchar(50) , 
-                    company varchar (300), Created_at DATE, url varchar(30000), Title CHARSET, Description LONGBLOB ); ''')
-    cursor.execute("INSERT INTO jobs (Job_id, company, Created_at, url, Title, Description) "
+                    Company varchar (300), Created_at DATE, url varchar(30000), Title CHARSET, Description LONGBLOB ); ''')
+    cursor.execute("INSERT INTO jobs (Job_id, Company, Created_at, url, Title, Description) "
                      "VALUES(%s,%s,%s,%s,%s,%s)", ("", "", date.today(), "", "", ""))
     return cursor
 
@@ -60,7 +60,7 @@ def delete_job(cursor, jobdetails):
 
 # Grab new jobs from a website, Parses JSON code and inserts the data into a list of dictionaries do not need to edit
 def fetch_new_jobs():
-    query = requests.get("https://remotive.io/api/remote-jobs")
+    query = requests.get("https://remotive.com/api/remote-jobs")
     datas = json.loads(query.text)
 
     return datas
@@ -91,6 +91,8 @@ def add_or_delete_job(jobpage, cursor):
             # Add in your code here to notify the user of a new posting. This code will notify the new user
             add_new_job(cursor, jobdetails)
             print("New Job Found: " + jobdetails['title'] + " at " + jobdetails['company_name'] + " on " + jobdetails['publication_date'])
+
+    return cursor
 
 
 
