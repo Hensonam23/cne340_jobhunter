@@ -12,7 +12,7 @@ def connect_to_sql():
     conn = mysql.connector.connect(user='root', password='',
                                    host='127.0.0.1',
                                     database='cne340')
-    cursor = conn.cursor()
+    return conn
 
 
 # Create the table structure
@@ -48,13 +48,13 @@ def add_new_job(cursor, jobdetails):
 # Check if new job
 def check_if_job_exists(cursor, jobdetails):
     ##Add your code here
-    query = "SELECT"
+    query = "SELECT * FROM jobs WHERE Job_id = " + jobdetails['id']  # This is the query to check if the job exists
     return query_sql(cursor, query)
 
 # Deletes job
 def delete_job(cursor, jobdetails):
     ##Add your code here
-    query = "UPDATE"
+    query = "DELETE FROM jobs WHERE Job_id = " + jobdetails['id']  # This is the query to delete the job if it already exists
     return query_sql(cursor, query)
 
 
