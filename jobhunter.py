@@ -4,6 +4,7 @@ import json
 import requests
 from datetime import date
 import html2text
+from datetime import timedelta # https://stackoverflow.com/questions/10048249/how-do-i-determine-if-current-time-is-within-a-specified-range-using-pythons-da
 
 
 # Connect to database
@@ -51,7 +52,7 @@ def check_if_job_exists(cursor, jobdetails):
 # Deletes job
 def delete_job(cursor, jobdetails):
     ##Add your code here
-    query = "DELETE FROM jobs WHERE Job_id = " + jobdetails['id']  # This is the query to delete the job if it already exists
+    query = "DELETE FROM jobs WHERE Job_id = " + str(jobdetails['id'])  # This is the query to delete the job if it already exists, I was getting errors until I converted the id to a string, https://stackoverflow.com/questions/509211/understanding-slice-notation
     return query_sql(cursor, query)
 
 
@@ -78,8 +79,15 @@ def add_or_delete_job(cursor, jobpage):
         check_if_job_exists(cursor, jobdetails)
         is_job_found = len(
             cursor.fetchall()) > 0  # https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
+        current_date = date.today() # Current date
+        job_posted_date = jobdetails['publication_date'][0:10] #Date the job was posted
+        job_posted_date = date(int(job_posted_date[0:4]), int(job_posted_date[5:7]), int(job_posted_date[8:10])) # https://stackoverflow.com/questions/509211/understanding-slice-notation and https://stackoverflow.com/questions/9987818/how-to-check-if-the-current-time-is-in-range-in-python
 
         if is_job_found:
+            delete_job(cursor, jobdetails)
+            print("Job Deleted: " + jobdetails['title'] + " at " + jobdetails['company_name'] + " on " + jobdetails['publication_date'])
+
+        if (current_date - job_posted_date) > timedelta(days=14): #delete job if it is older than 14 days, https://stackoverflow.com/questions/10048249/how-do-i-determine-if-current-time-is-within-a-specified-range-using-pythons-da
             delete_job(cursor, jobdetails)
             print("Job Deleted: " + jobdetails['title'] + " at " + jobdetails['company_name'] + " on " + jobdetails['publication_date'])
 
@@ -102,7 +110,7 @@ def main():
 
    while 1:  # Infinite Loops. Only way to kill it is to crash or manually crash it. We did this as a background process/passive scraper
        jobhunt(cursor)
-       time.sleep(10)  # Sleep for 4h, this is ran every hour because API or web interfaces have request limits. Your request will get blocked.
+       time.sleep(864000)  # Sleep for 4h, this is ran every hour because API or web interfaces have request limits. Your request will get blocked.
 
 # Sleep does a rough cycle count, system is not entirely accurate
 # If you want to test if script works change time.sleep() to 10 seconds and delete your table in MySQL
